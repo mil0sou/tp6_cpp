@@ -22,7 +22,7 @@ void circuleAB(int numTrain) {
   std::this_thread::sleep_for(std::chrono::milliseconds(rand() % 100));
 
   // FIN DU PARCOURS A->B
-  std::cout << "Train n " << numTrain << " quitte le tronçon de voie unique " << std::endl;
+  std::cout << "Train n " << numTrain << " quitte le troncon de voie unique " << std::endl;
   lck.lock();
   ctrl.controloutEnB(numTrain);  // SIGNAL DE SORTIE AU CONTROLEUR
   lck.unlock();
@@ -43,7 +43,7 @@ void circuleBA(int numTrain) {
   std::this_thread::sleep_for(std::chrono::milliseconds(rand() % 100));
 
   // FIN DU PARCOURS B->A
-  std::cout << "Train n " << numTrain << " quitte le tronçon de voie unique " << std::endl;
+  std::cout << "Train n " << numTrain << " quitte le troncon de voie unique " << std::endl;
   lck.lock();
   ctrl.controloutEnA(numTrain);   // SIGNAL DE SORTIE AU CONTROLEUR
   lck.unlock();

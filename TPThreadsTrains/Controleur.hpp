@@ -16,7 +16,7 @@ public:
         }
         if (direction == 1 && trains_on_track < max_trains_on_track) {
             trains_on_track++;
-            std::cout << "Train n " << numero << " est autorisé à entrer sur le tronçon (A->B)." << std::endl;
+            std::cout << "Train n " << numero << " est autorise a entrer sur le troncon (A->B)." << std::endl;
             return true;
         }
         return false;
@@ -29,7 +29,7 @@ public:
         }
         if (direction == -1 && trains_on_track < max_trains_on_track) {
             trains_on_track++;
-            std::cout << "Train n " << numero << " est autorisé à entrer sur le tronçon (B->A)." << std::endl;
+            std::cout << "Train n " << numero << " est autorise a entrer sur le troncon (B->A)." << std::endl;
             return true;
         }
         return false;
@@ -38,7 +38,7 @@ public:
     // Fonction appelée quand un train quitte de A vers B
     void controloutEnB(int numero) {
         trains_on_track--;
-        std::cout << "Train n " << numero << " quitte le tronçon (A->B)." << std::endl;
+        std::cout << "Train n " << numero << " quitte le troncon (A->B)." << std::endl;
         if (trains_on_track == 0) {
             direction = 0; // Libérer la direction
         }
@@ -47,7 +47,7 @@ public:
     // Fonction appelée quand un train quitte de B vers A
     void controloutEnA(int numero) {
         trains_on_track--;
-        std::cout << "Train n " << numero << " quitte le tronçon (B->A)." << std::endl;
+        std::cout << "Train n " << numero << " quitte le troncon (B->A)." << std::endl;
         if (trains_on_track == 0) {
             direction = 0; // Libérer la direction
         }
