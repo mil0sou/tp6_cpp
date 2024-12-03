@@ -28,7 +28,7 @@ void circuleAB(int numTrain){
     lck.unlock();
   cv.notify_all();
 
-  
+
 }
 
 // TrainBA 
@@ -36,7 +36,7 @@ void circuleBA(int numTrain){
   std::cout << "Train no " << numTrain << " arrive en B vers A " << endl;
   this_thread::sleep_for(chrono::milliseconds(rand() % 1000) );
   std::unique_lock<std::mutex> lck(mtx);
-  cv.wait(lck,[numTrain]{return ctrl.controlinEnB(numTrain);}); // ATTENTE D'AUTORISATION DE CIRCULER
+  cv.wait(lck,[numTrain]{return ctrl.controlinEnB(numTrain);}); // ATTENTE  D'AUTORISATION DE CIRCULER
   lck.unlock();
   // DEBUT DU PARCOURSs B->A
   std::cout << "Train no "<< numTrain << " circule de B vers A  <<<<<<<<" << endl;
