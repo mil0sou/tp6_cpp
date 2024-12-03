@@ -4,11 +4,15 @@
 
 int ressourcePartagee;
 
+Semaphore sem1(1);
+
 void lecteur(int numLecteur){
   for (int i = 0; i < 4; i++){
+    sem1.P(numLecteur);
     std::cout << "Lecteur n° " << numLecteur << " en cours " << endl;
     this_thread::sleep_for(chrono::milliseconds(rand() % 20000) );
     std::cout << "        Valeur lue = " << ressourcePartagee << "  " << endl;
+    sem1.V(numLecteur);
   }
 }
 
