@@ -10,36 +10,40 @@ Controleur ctrl(0);   // LE PROCESSUS CONTROLEUR
 
 // TrainAB 
 void circuleAB(int numTrain){
-  std::cout << "Train n° " << numTrain << " arrive en A vers B " << endl;
+
+
+  std::cout << "Train no " << numTrain << " arrive en A vers B " << endl;
   this_thread::sleep_for(chrono::milliseconds(rand() % 1000) );
   std::unique_lock<std::mutex> lck(mtx);
     cv.wait(lck,[numTrain]{return ctrl.controlinEnA(numTrain);}); // ATTENTE D'AUTORISATION DE CIRCULER
     lck.unlock();
   // DEBUT DU PARCOURS A->B
-  std::cout << "Train n° "<< numTrain << " circule de A vers B  >>>>>> " << endl;
+  std::cout << "Train no "<< numTrain << " circule de A vers B  >>>>>> " << endl;
   this_thread::sleep_for(chrono::milliseconds(rand() % 100) );
 
   // FIN DU PARCOURS A->B
-  std::cout << "Train n° " << numTrain << " quitte le tronçon de voie unique " << endl;
+  std::cout << "Train no " << numTrain << " quitte le troncon de voie unique " << endl;
     lck.lock();
   ctrl.controloutEnB(numTrain);  // SIGNAL DE SORTIE AU CONTROLEUR
     lck.unlock();
   cv.notify_all();
+
+  
 }
 
 // TrainBA 
 void circuleBA(int numTrain){
-  std::cout << "Train n° " << numTrain << " arrive en B vers A " << endl;
+  std::cout << "Train no " << numTrain << " arrive en B vers A " << endl;
   this_thread::sleep_for(chrono::milliseconds(rand() % 1000) );
   std::unique_lock<std::mutex> lck(mtx);
   cv.wait(lck,[numTrain]{return ctrl.controlinEnB(numTrain);}); // ATTENTE D'AUTORISATION DE CIRCULER
   lck.unlock();
   // DEBUT DU PARCOURSs B->A
-  std::cout << "Train n° "<< numTrain << " circule de B vers A  <<<<<<<<" << endl;
+  std::cout << "Train no "<< numTrain << " circule de B vers A  <<<<<<<<" << endl;
   this_thread::sleep_for(chrono::milliseconds(rand() % 100) );
   
   // FIN DU PARCOURS B->A
-  std::cout << "Train n° " << numTrain << " quitte le tronçon de voie unique " << endl;
+  std::cout << "Train no " << numTrain << " quitte le troncon de voie unique " << endl;
    lck.lock();
   ctrl.controloutEnA(numTrain);   // SIGNAL DE SORTIE AU CONTROLEUR
    lck.unlock();
