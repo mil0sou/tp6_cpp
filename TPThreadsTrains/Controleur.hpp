@@ -5,71 +5,58 @@
 #include <mutex>
 #include <condition_variable>
 
-using namespace std;
-
 class Controleur {
 public:
     Controleur() : trains_on_track(0), direction(0) {}
 
-    // Méthode appelée pour demander à entrer sur le tronçon en direction de B
+    // Fonction appelée avant qu'un train entre de A vers B
     bool controlinEnA(int numero) {
-        unique_lock<mutex> lck(mtx);
-        // Attente tant que le tronçon est occupé par des trains dans l'autre direction
-        while (trains_on_track > 0 && direction != 1) {
-            cv.wait(lck);
+        if (trains_on_track == 0) { 
+            direction = 1; // Direction 1 = A->B
         }
-        // Autoriser l'entrée
-        direction = 1;  // Direction A->B
-        trains_on_track++;
-        cout << "Train n°" << numero << " est autorisé à entrer sur le tronçon (A->B)." << endl;
-        return true;
+        if (direction == 1 && trains_on_track < max_trains_on_track) {
+            trains_on_track++;
+            std::cout << "Train n " << numero << " est autorisé à entrer sur le tronçon (A->B)." << std::endl;
+            return true;
+        }
+        return false;
     }
 
-    // Méthode appelée pour demander à entrer sur le tronçon en direction de A
+    // Fonction appelée avant qu'un train entre de B vers A
     bool controlinEnB(int numero) {
-        unique_lock<mutex> lck(mtx);
-        // Attente tant que le tronçon est occupé par des trains dans l'autre direction
-        while (trains_on_track > 0 && direction != -1) {
-            cv.wait(lck);
+        if (trains_on_track == 0) {
+            direction = -1; // Direction -1 = B->A
         }
-        // Autoriser l'entrée
-        direction = -1;  // Direction B->A
-        trains_on_track++;
-        cout << "Train n°" << numero << " est autorisé à entrer sur le tronçon (B->A)." << endl;
-        return true;
+        if (direction == -1 && trains_on_track < max_trains_on_track) {
+            trains_on_track++;
+            std::cout << "Train n " << numero << " est autorisé à entrer sur le tronçon (B->A)." << std::endl;
+            return true;
+        }
+        return false;
     }
 
-    // Méthode appelée pour signaler la sortie du tronçon en direction de B
-    bool controloutEnB(int numero) {
-        unique_lock<mutex> lck(mtx);
+    // Fonction appelée quand un train quitte de A vers B
+    void controloutEnB(int numero) {
         trains_on_track--;
-        cout << "Train n°" << numero << " a quitté le tronçon (A->B)." << endl;
-        // Libérer le tronçon si aucun train n'y est présent
+        std::cout << "Train n " << numero << " quitte le tronçon (A->B)." << std::endl;
         if (trains_on_track == 0) {
-            direction = 0;  // Libérer la voie
-            cv.notify_all();
+            direction = 0; // Libérer la direction
         }
-        return true;
     }
 
-    // Méthode appelée pour signaler la sortie du tronçon en direction de A
-    bool controloutEnA(int numero) {
-        unique_lock<mutex> lck(mtx);
+    // Fonction appelée quand un train quitte de B vers A
+    void controloutEnA(int numero) {
         trains_on_track--;
-        cout << "Train n°" << numero << " a quitté le tronçon (B->A)." << endl;
-        // Libérer le tronçon si aucun train n'y est présent
+        std::cout << "Train n " << numero << " quitte le tronçon (B->A)." << std::endl;
         if (trains_on_track == 0) {
-            direction = 0;  // Libérer la voie
-            cv.notify_all();
+            direction = 0; // Libérer la direction
         }
-        return true;
     }
 
 private:
-    int trains_on_track;           // Nombre de trains actuellement sur le tronçon
-    int direction;                 // Direction actuelle : 1 pour A->B, -1 pour B->A, 0 pour libre
-    mutex mtx;                     // Mutex pour protéger les données partagées
-    condition_variable cv;         // Condition variable pour la synchronisation
+    int trains_on_track;           // Nombre de trains sur le tronçon
+    int direction;                 // 1 = A->B, -1 = B->A, 0 = libre
+    const int max_trains_on_track = 1; // Nombre maximum de trains autorisés
 };
 
 #endif // CONTROLEUR_HPP

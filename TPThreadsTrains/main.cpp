@@ -6,66 +6,67 @@
 
 std::mutex mtx;
 std::condition_variable cv;
-Controleur ctrl(0);   // LE PROCESSUS CONTROLEUR
+Controleur ctrl;   // LE PROCESSUS CONTROLEUR
 
 // TrainAB 
-void circuleAB(int numTrain){
-
-
-  std::cout << "Train no " << numTrain << " arrive en A vers B " << endl;
-  this_thread::sleep_for(chrono::milliseconds(rand() % 1000) );
+void circuleAB(int numTrain) {
+  std::cout << "Train n " << numTrain << " arrive en A vers B " << std::endl;
+  std::this_thread::sleep_for(std::chrono::milliseconds(rand() % 1000));
+  
   std::unique_lock<std::mutex> lck(mtx);
-    cv.wait(lck,[numTrain]{return ctrl.controlinEnA(numTrain);}); // ATTENTE D'AUTORISATION DE CIRCULER
-    lck.unlock();
+  cv.wait(lck, [numTrain] { return ctrl.controlinEnA(numTrain); }); // ATTENTE D'AUTORISATION DE CIRCULER
+  lck.unlock();
+  
   // DEBUT DU PARCOURS A->B
-  std::cout << "Train no "<< numTrain << " circule de A vers B  >>>>>> " << endl;
-  this_thread::sleep_for(chrono::milliseconds(rand() % 100) );
+  std::cout << "Train n " << numTrain << " circule de A vers B  >>>>>> " << std::endl;
+  std::this_thread::sleep_for(std::chrono::milliseconds(rand() % 100));
 
   // FIN DU PARCOURS A->B
-  std::cout << "Train no " << numTrain << " quitte le troncon de voie unique " << endl;
-    lck.lock();
+  std::cout << "Train n " << numTrain << " quitte le tronçon de voie unique " << std::endl;
+  lck.lock();
   ctrl.controloutEnB(numTrain);  // SIGNAL DE SORTIE AU CONTROLEUR
-    lck.unlock();
+  lck.unlock();
   cv.notify_all();
-
-  
 }
 
 // TrainBA 
-void circuleBA(int numTrain){
-  std::cout << "Train no " << numTrain << " arrive en B vers A " << endl;
-  this_thread::sleep_for(chrono::milliseconds(rand() % 1000) );
-  std::unique_lock<std::mutex> lck(mtx);
-  cv.wait(lck,[numTrain]{return ctrl.controlinEnB(numTrain);}); // ATTENTE D'AUTORISATION DE CIRCULER
-  lck.unlock();
-  // DEBUT DU PARCOURSs B->A
-  std::cout << "Train no "<< numTrain << " circule de B vers A  <<<<<<<<" << endl;
-  this_thread::sleep_for(chrono::milliseconds(rand() % 100) );
+void circuleBA(int numTrain) {
+  std::cout << "Train n " << numTrain << " arrive en B vers A " << std::endl;
+  std::this_thread::sleep_for(std::chrono::milliseconds(rand() % 1000));
   
+  std::unique_lock<std::mutex> lck(mtx);
+  cv.wait(lck, [numTrain] { return ctrl.controlinEnB(numTrain); }); // ATTENTE D'AUTORISATION DE CIRCULER
+  lck.unlock();
+  
+  // DEBUT DU PARCOURS B->A
+  std::cout << "Train n " << numTrain << " circule de B vers A  <<<<<<<<" << std::endl;
+  std::this_thread::sleep_for(std::chrono::milliseconds(rand() % 100));
+
   // FIN DU PARCOURS B->A
-  std::cout << "Train no " << numTrain << " quitte le troncon de voie unique " << endl;
-   lck.lock();
+  std::cout << "Train n " << numTrain << " quitte le tronçon de voie unique " << std::endl;
+  lck.lock();
   ctrl.controloutEnA(numTrain);   // SIGNAL DE SORTIE AU CONTROLEUR
-   lck.unlock();
+  lck.unlock();
   cv.notify_all();
 }
 
-int main(){
+int main() {
   const int nbr = 9;
   std::srand(std::time(nullptr));
   std::thread trainsAB[nbr];
   std::thread trainsBA[nbr];
 
-  // INITALISE TRAINS ET CONTROLEUR
-  for (int i = 1; i < nbr; i++){
+  // INITIALISE TRAINS ET CONTROLEUR
+  for (int i = 1; i < nbr; i++) {
     trainsAB[i] = std::thread(circuleAB, i);
     trainsBA[i] = std::thread(circuleBA, -i);
   }
-// JOIN DES THREADS 
+
+  // JOIN DES THREADS 
   for (int i = 1; i < nbr; i++) {
-    if (trainsAB[i].joinable()) trainsAB[i].join(); 
-    if (trainsBA[i].joinable()) trainsBA[i].join();   
+    if (trainsAB[i].joinable()) trainsAB[i].join();
+    if (trainsBA[i].joinable()) trainsBA[i].join();
   }
+
   return 0;
 }
-
